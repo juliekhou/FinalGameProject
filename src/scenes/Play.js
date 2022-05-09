@@ -53,10 +53,10 @@ class Play extends Phaser.Scene{
         }
         
         // Clock
-        this.clockRight = this.add.text(0, 50, 0, clockConfig);
-        // 60-second play clock
-        this.timeR = game.settings.gameTimer;
-        this.clock = this.time.addEvent({delay: 1000, callback: () => {this.timeR -= 1000;}, callbackScope: this, loop: true});
+//         this.clockRight = this.add.text(0, 50, 0, clockConfig);
+//         // 60-second play clock
+//         this.timeR = game.settings.gameTimer;
+//         this.clock = this.time.addEvent({delay: 1000, callback: () => {this.timeR -= 1000;}, callbackScope: this, loop: true});
 
     }
 
