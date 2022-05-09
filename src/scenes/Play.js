@@ -38,13 +38,36 @@ class Play extends Phaser.Scene{
         // Use Phaser-provided cursor key creation function
         cursors = this.input.keyboard.createCursorKeys();
 
+        // display clock
+        let clockConfig = {
+            fontFamily: 'Courier',
+            fontSize: '28px',
+            backgroundColor: '#A9DEF9',
+            color: '#EDE7B1',
+            align: 'right',
+            padding: {
+            top: 5,
+            bottom: 5,
+            },
+            fixedWidth: 100
+        }
+        
+        // Clock
+        this.clockRight = this.add.text(0, 50, 0, clockConfig);
+        // 60-second play clock
+        this.timeR = game.settings.gameTimer;
+        this.clock = this.time.addEvent({delay: 1000, callback: () => {this.timeR -= 1000;}, callbackScope: this, loop: true});
+
     }
 
     update(){
 
+        if(!(this.timeR < 0)){
+            this.clockRight.setText(this.timeR/1000);
+        }
+
         // game over
         if(gameOver){
-            this.backgroundMusic.stop();
             this.scene.start('GameOver');
         }
 
