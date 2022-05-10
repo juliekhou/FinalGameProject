@@ -45,6 +45,11 @@ class Menu extends Phaser.Scene {
 
 
     update() {
+        // game settings
+        game.settings = {
+            gameTimer: 30000    
+        }
+
         // play animations
         this.title.anims.play('titleAnimation', true);
         this.tutorial.anims.play('tutorialAnimation', true);

@@ -6,6 +6,7 @@ class Play extends Phaser.Scene{
     preload(){
         // load spritesheets
         this.load.spritesheet('angel', './assets/angel.png', {frameWidth: 64, frameHeight: 64, startFrame: 0, endFrame: 1});
+        this.load.atlas('npc_atlas', './assets/player.png', './assets/player.json');
     }
 
     create(){
@@ -26,45 +27,86 @@ class Play extends Phaser.Scene{
 
         // adding the angel
         this.angel = this.physics.add.sprite('angel');
-        this.anims.create({
-            key: 'idle',
-            frames: this.anims.generateFrameNumbers('angel', { start: 0, end: 1, first: 0}),
-            frameRate: 10
-        });
 
         // make player avatar 🧍
-        this.player = this.physics.add.sprite(game.config.width/2, game.config.height/2, 'angel', 'idle').setScale(this.AVATAR_SCALE);
+        this.player = this.physics.add.sprite(game.config.width/2, game.config.height/2, 'angel').setScale(this.AVATAR_SCALE);
         
         // Use Phaser-provided cursor key creation function
         cursors = this.input.keyboard.createCursorKeys();
 
+        // adding the player
+        this.npcGroup = this.add.group({});
+
+        //after collision, random direction
+
+        for(let x = 0; x < 75; x++){
+            this.addNPC();
+        }
+            
+        this.anims.create({ 
+            key: 'walk', 
+            frames: this.anims.generateFrameNames('npc_atlas', {      
+                prefix: 'player',
+                start: 1,
+                end: 8,
+                suffix: '',
+            }), 
+            frameRate: 10,
+            repeat: -1 
+        });
+
+        this.physics.add.collider(this.npcGroup, this.player, (npc)=> {this.collide(npc)});
+        this.physics.add.collider(this.npcGroup);
+
+
         // display clock
-//         let clockConfig = {
-//             fontFamily: 'Courier',
-//             fontSize: '28px',
-//             backgroundColor: '#A9DEF9',
-//             color: '#EDE7B1',
-//             align: 'right',
-//             padding: {
-//             top: 5,
-//             bottom: 5,
-//             },
-//             fixedWidth: 100
-//         }
+        let clockConfig = {
+            fontFamily: 'Courier',
+            fontSize: '28px',
+            backgroundColor: '#A9DEF9',
+            color: '#EDE7B1',
+            align: 'right',
+            padding: {
+            top: 5,
+            bottom: 5,
+            },
+            fixedWidth: 100
+        }
         
         // Clock
-//         this.clockRight = this.add.text(0, 50, 0, clockConfig);
-//         // 60-second play clock
-//         this.timeR = game.settings.gameTimer;
-//         this.clock = this.time.addEvent({delay: 1000, callback: () => {this.timeR -= 1000;}, callbackScope: this, loop: true});
+        this.clockRight = this.add.text(0, 50, 0, clockConfig);
+        // 60-second play clock
+        this.timeR = game.settings.gameTimer;
+        this.clock = this.time.addEvent({delay: 1000, callback: () => {this.timeR -= 1000;}, callbackScope: this, loop: true});
 
     }
 
-    update(){
+    addNPC(){
+        let xPosition = Math.ceil(Math.random() * 1270);
+        let yPosition = Math.ceil(Math.random() * 710);
+        let npc = new NPC(this, xPosition, yPosition, "npc_atlas", "player1").setScale(this.AVATAR_SCALE);
+        this.npcGroup.add(npc);
 
-//         if(!(this.timeR < 0)){
-//             this.clockRight.setText(this.timeR/1000);
-//         }
+        let xVelocity = (Math.ceil(Math.random() * 300) + 0) * (Math.round(Math.random()) ? 1 : -1);
+        
+
+        let yVelocity = (Math.ceil(Math.random() * 225) + 75) * (Math.round(Math.random()) ? 1 : -1);
+        // npc.setVelocityY(yVelocity);
+        npc.setVelocity(xVelocity, yVelocity).setBounce(1,1);
+
+        //this.physics.add.overlap(this.player, npc, (npc)=> {this.collide(npc)});
+    }
+
+    collide(npc){
+        let xVelocity = (Math.ceil(Math.random() * 300) + 0) * (Math.round(Math.random()) ? 1 : -1);
+        let yVelocity = (Math.ceil(Math.random() * 225) + 75) * (Math.round(Math.random()) ? 1 : -1);
+        npc.setVelocity(xVelocity, yVelocity).setBounce(1,1);
+    }
+
+    update(){
+        if(!(this.timeR < 0)){
+            this.clockRight.setText(this.timeR/1000);
+        }
 
         // game over
         if(gameOver){
@@ -87,8 +129,18 @@ class Play extends Phaser.Scene{
             this.player.body.setVelocityY(0);
         }
 
+        this.npcGroup.getChildren().forEach(function(npc){
+            if(npc.body.velocity.x < 0) {
+                npc.flipX = true;
+            } else {
+                npc.flipX = false;
+            }
+            npc.anims.play('walk', true);
+        }, this);
+
         // wrap physics object(s) .wrap(gameObject, padding)
         this.physics.world.wrap(this.player, 0);
+        this.physics.world.wrap(this.npcGroup, 0);
     }
 
         
