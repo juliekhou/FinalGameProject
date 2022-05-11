@@ -4,7 +4,7 @@
 
 // object containing game configuration options
 let gameConfig = {
-    type: Phaser.AUTO,
+    type: Phaser.WEBGL,
     width: 1280,
     height: 720,
     scene: [Menu, Tutorial, Play, GameOver],
@@ -31,3 +31,5 @@ let cursors;
 let timeLeft;
 // state variable declaration
 let hiderWin, seekerWin;
+
+let light;

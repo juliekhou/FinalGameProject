@@ -28,13 +28,10 @@ class Play extends Phaser.Scene{
         // set bg color
         this.cameras.main.setBackgroundColor('#666');
 
-        // adding the angel
-        //this.angel = this.physics.add.sprite('angel').setOrigin(0, 0).setInteractive();
-        //this.angel.on('pointerdown', () => {this.clickHider()});
-
         // make player avatar 🧍
         this.player = this.physics.add.sprite(game.config.width/2, game.config.height/2, 'angel').setScale(this.AVATAR_SCALE).setOrigin(0, 0).setInteractive();
         this.player.on('pointerdown', () => {this.clickHider()});
+        this.player.setPipeline('Light2D');
 
         // Use Phaser-provided cursor key creation function
         cursors = this.input.keyboard.createCursorKeys();
@@ -80,12 +77,23 @@ class Play extends Phaser.Scene{
         this.timeR = game.settings.gameTimer;
         this.clock = this.time.addEvent({delay: 1000, callback: () => {this.timeR -= 1000;}, callbackScope: this, loop: true});
 
+        // lighting
+        // ambient lighting
+        this.lights.enable().setAmbientColor(0x363636);
+
+        // point light that follows cursor
+        light = this.lights.addLight(0, 0, 200);
+        this.input.on('pointermove', function (pointer) {
+            light.x = pointer.x;
+            light.y = pointer.y;
+        });
     }
 
     addNPC(){
         let xPosition = Math.ceil(Math.random() * 1270);
         let yPosition = Math.ceil(Math.random() * 710);
         let npc = new NPC(this, xPosition, yPosition, "npc_atlas", "player1").setScale(this.AVATAR_SCALE);
+        npc.setPipeline('Light2D');
         this.npcGroup.add(npc);
 
         let xVelocity = (Math.ceil(Math.random() * 300) + 0) * (Math.round(Math.random()) ? 1 : -1);
