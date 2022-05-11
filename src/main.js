@@ -30,4 +30,4 @@ let cursors;
 // player score declaration
 let timeLeft;
 // state variable declaration
-let gameOver, playerFound;
+let hiderWin, seekerWin;

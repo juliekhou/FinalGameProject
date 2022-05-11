@@ -10,35 +10,37 @@ class Play extends Phaser.Scene{
     }
 
     create(){
-        // variable for game over state
-        gameOver = false;
+        // change cursor to flashlight
+        this.input.setDefaultCursor('url(./assets/flashlight.png), pointer');
 
-        // variable for player being hit state (before game over) (transition state)
-        playerFound = false;
+        // variable for hider winning state (time runs out)
+        hiderWin = false;
+
+        // variable for seeker winning state (seeker clicks hider)
+        seekerWin = false;
 
         // variables and settings
         this.VELOCITY = 500;
         this.DRAG = 800;    // DRAG < ACCELERATION = icy slide
         this.GROUND_HEIGHT = 35;
-        this.AVATAR_SCALE = 0.5;
+        this.AVATAR_SCALE = 0.75;
 
         // set bg color
         this.cameras.main.setBackgroundColor('#666');
 
         // adding the angel
-        this.angel = this.physics.add.sprite('angel');
+        //this.angel = this.physics.add.sprite('angel').setOrigin(0, 0).setInteractive();
+        //this.angel.on('pointerdown', () => {this.clickHider()});
 
         // make player avatar 🧍
-        this.player = this.physics.add.sprite(game.config.width/2, game.config.height/2, 'angel').setScale(this.AVATAR_SCALE);
-        
+        this.player = this.physics.add.sprite(game.config.width/2, game.config.height/2, 'angel').setScale(this.AVATAR_SCALE).setOrigin(0, 0).setInteractive();
+        this.player.on('pointerdown', () => {this.clickHider()});
+
         // Use Phaser-provided cursor key creation function
         cursors = this.input.keyboard.createCursorKeys();
 
-        // adding the player
+        // adding the NPCs
         this.npcGroup = this.add.group({});
-
-        //after collision, random direction
-
         for(let x = 0; x < 75; x++){
             this.addNPC();
         }
@@ -57,7 +59,6 @@ class Play extends Phaser.Scene{
 
         this.physics.add.collider(this.npcGroup, this.player, (npc)=> {this.collide(npc)});
         this.physics.add.collider(this.npcGroup);
-
 
         // display clock
         let clockConfig = {
@@ -88,13 +89,8 @@ class Play extends Phaser.Scene{
         this.npcGroup.add(npc);
 
         let xVelocity = (Math.ceil(Math.random() * 300) + 0) * (Math.round(Math.random()) ? 1 : -1);
-        
-
         let yVelocity = (Math.ceil(Math.random() * 225) + 75) * (Math.round(Math.random()) ? 1 : -1);
-        // npc.setVelocityY(yVelocity);
         npc.setVelocity(xVelocity, yVelocity).setBounce(1,1);
-
-        //this.physics.add.overlap(this.player, npc, (npc)=> {this.collide(npc)});
     }
 
     collide(npc){
@@ -106,10 +102,12 @@ class Play extends Phaser.Scene{
     update(){
         if(!(this.timeR < 0)){
             this.clockRight.setText(this.timeR/1000);
+        } else {
+            hiderWin = true;
         }
 
         // game over
-        if(gameOver){
+        if(hiderWin){
             this.scene.start('GameOver');
         }
 
@@ -145,36 +143,11 @@ class Play extends Phaser.Scene{
 
         
 
-    // function for clicking a flower pot
-    // can be converted to be used as function for clicking the hiding person
-    clickPot(pot, pointer){
-        // player can click pot if murphy is not hit
-        if(!playerFound){
-
-            // play sound
-            this.sound.play('clickPot');
-
-            // move angel to where pointer was clicked
-            this.physics.moveToObject(this.angel, pointer, 550);
-            this.pointerX = pointer.x;
-            this.pointerY = pointer.y;
-
-            // destroy pot
-            pot.destroy();
-
-            // create poof sprite at pot's position
-            let poof = this.add.sprite(pot.x, pot.y, 'poof').setOrigin(0, 0);
-
-            // play poof animation
-            poof.anims.play('poof');
-
-            // callback after anim completes            
-            poof.on('animationcomplete', () => { 
-                // remove poof sprite                    
-                poof.destroy();      
-                this.clock.paused = false;             
-            });
-        }
+    // function for clicking the hiding player
+    clickHider(){
+        console.log("click");
+        this.scene.start('GameOver');
+        seekerWin = true;
     }
 };
 
