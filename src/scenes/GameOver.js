@@ -17,7 +17,7 @@ class GameOver extends Phaser.Scene {
             frames: this.anims.generateFrameNumbers('playAgain', { start: 0, end: 4, first: 0}),
             frameRate: 6
         });
-        // adding interactibility
+        // adding interactibility for play again
         this.playAgain.on('pointerdown', ()=> {
             this.scene.start('Menu');
         });

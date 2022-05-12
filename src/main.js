@@ -31,5 +31,5 @@ let cursors;
 let timeLeft;
 // state variable declaration
 let hiderWin, seekerWin;
-
+// light variable declaration
 let light;

@@ -5,14 +5,4 @@ class NPC extends Phaser.Physics.Arcade.Sprite {
         scene.physics.add.existing(this); // add to physics
         scene.add.existing(this);   // add to existing scene
     }
-
-    //might not be used
-    update() {
-        this.x -= 2;
-    }
-
-    //might not be used
-    reset(){
-        
-    }
 }

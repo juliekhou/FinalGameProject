@@ -20,16 +20,16 @@ class Play extends Phaser.Scene{
         seekerWin = false;
 
         // variables and settings
-        this.VELOCITY = 500;
+        this.VELOCITY = 400;
         this.DRAG = 800;    // DRAG < ACCELERATION = icy slide
         this.GROUND_HEIGHT = 35;
         this.AVATAR_SCALE = 0.75;
 
-        // set bg color
+        // set background color
         this.cameras.main.setBackgroundColor('#666');
 
         // make player avatar 🧍
-        this.player = this.physics.add.sprite(game.config.width/2, game.config.height/2, 'angel').setScale(this.AVATAR_SCALE).setOrigin(0, 0).setInteractive();
+        this.player = this.physics.add.sprite(game.config.width/2, game.config.height/2, 'npc_atlas').setScale(this.AVATAR_SCALE).setOrigin(0, 0).setInteractive();
         this.player.on('pointerdown', () => {this.clickHider()});
         this.player.setPipeline('Light2D');
 
@@ -41,7 +41,8 @@ class Play extends Phaser.Scene{
         for(let x = 0; x < 75; x++){
             this.addNPC();
         }
-            
+        
+        // walk animation for human NPC
         this.anims.create({ 
             key: 'walk', 
             frames: this.anims.generateFrameNames('npc_atlas', {      
@@ -54,6 +55,7 @@ class Play extends Phaser.Scene{
             repeat: -1 
         });
 
+        // adding collisions 
         this.physics.add.collider(this.npcGroup, this.player, (npc)=> {this.collide(npc)});
         this.physics.add.collider(this.npcGroup);
 
@@ -70,16 +72,15 @@ class Play extends Phaser.Scene{
             },
             fixedWidth: 100
         }
-        
-        // Clock
+        // clock
         this.clockRight = this.add.text(0, 50, 0, clockConfig);
         // 60-second play clock
-        this.timeR = game.settings.gameTimer;
-        this.clock = this.time.addEvent({delay: 1000, callback: () => {this.timeR -= 1000;}, callbackScope: this, loop: true});
+        this.timer = game.settings.gameTimer;
+        this.clock = this.time.addEvent({delay: 1000, callback: () => {this.timer -= 1000;}, callbackScope: this, loop: true});
 
         // lighting
         // ambient lighting
-        this.lights.enable().setAmbientColor(0x363636);
+        this.lights.enable().setAmbientColor(0x222222);
 
         // point light that follows cursor
         light = this.lights.addLight(0, 0, 200);
@@ -89,33 +90,39 @@ class Play extends Phaser.Scene{
         });
     }
 
+    // function for adding NPC with randomized velocity and start position
     addNPC(){
+        // set random starting x and y positions for NPC
         let xPosition = Math.ceil(Math.random() * 1270);
         let yPosition = Math.ceil(Math.random() * 710);
+
+        // initialize NPC with lighting
         let npc = new NPC(this, xPosition, yPosition, "npc_atlas", "player1").setScale(this.AVATAR_SCALE);
         npc.setPipeline('Light2D');
+
+        // add NPC to group
         this.npcGroup.add(npc);
 
+        // randomly set velocity
         let xVelocity = (Math.ceil(Math.random() * 300) + 0) * (Math.round(Math.random()) ? 1 : -1);
         let yVelocity = (Math.ceil(Math.random() * 225) + 75) * (Math.round(Math.random()) ? 1 : -1);
         npc.setVelocity(xVelocity, yVelocity).setBounce(1,1);
     }
 
+    // function to handle collision between hider and NPCs
     collide(npc){
+        // randomly set velocity after collision
         let xVelocity = (Math.ceil(Math.random() * 300) + 0) * (Math.round(Math.random()) ? 1 : -1);
         let yVelocity = (Math.ceil(Math.random() * 225) + 75) * (Math.round(Math.random()) ? 1 : -1);
         npc.setVelocity(xVelocity, yVelocity).setBounce(1,1);
     }
 
     update(){
-        if(!(this.timeR < 0)){
-            this.clockRight.setText(this.timeR/1000);
+        // display timer and check if it is done
+        if(!(this.timer < 0)){
+            this.clockRight.setText(this.timer/1000);
         } else {
             hiderWin = true;
-        }
-
-        // game over
-        if(hiderWin){
             this.scene.start('GameOver');
         }
 
@@ -135,6 +142,7 @@ class Play extends Phaser.Scene{
             this.player.body.setVelocityY(0);
         }
 
+        // iterate through NPCs and check their direction and play animation
         this.npcGroup.getChildren().forEach(function(npc){
             if(npc.body.velocity.x < 0) {
                 npc.flipX = true;
@@ -144,16 +152,12 @@ class Play extends Phaser.Scene{
             npc.anims.play('walk', true);
         }, this);
 
-        // wrap physics object(s) .wrap(gameObject, padding)
         this.physics.world.wrap(this.player, 0);
         this.physics.world.wrap(this.npcGroup, 0);
     }
 
-        
-
-    // function for clicking the hiding player
+    // function for clicking the hider
     clickHider(){
-        console.log("click");
         this.scene.start('GameOver');
         seekerWin = true;
     }
