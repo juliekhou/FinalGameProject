@@ -5,18 +5,20 @@ class GameOver extends Phaser.Scene {
 
     preload() {
         // load sprite sheet
-        this.load.spritesheet('playAgain', './assets/playAgain.png', {frameWidth: 550, frameHeight: 110, startFrame: 0, endFrame: 4});
+        this.load.image('playAgain', './assets/playAgain.png');
+        this.load.image('seekerWon', './assets/seekerWon.png');
+        this.load.image('hiderWon', './assets/hiderWon.png');
     }
 
     create() {
         // play again button
-        this.playAgain = this.physics.add.sprite(380, 575, 'playAgain').setOrigin(0, 0).setInteractive();
+        this.playAgain = this.add.sprite(295, 525, 'playAgain').setOrigin(0, 0).setInteractive();
         // adding animations
-        this.anims.create({
-            key: 'playAgainAnimation',
-            frames: this.anims.generateFrameNumbers('playAgain', { start: 0, end: 4, first: 0}),
-            frameRate: 6
-        });
+        // this.anims.create({
+        //     key: 'playAgainAnimation',
+        //     frames: this.anims.generateFrameNumbers('playAgain', { start: 0, end: 4, first: 0}),
+        //     frameRate: 6
+        // });
         // adding interactibility for play again
         this.playAgain.on('pointerdown', ()=> {
             this.scene.start('Menu');
@@ -24,28 +26,28 @@ class GameOver extends Phaser.Scene {
 
         // determine winner
         if(seekerWin){
-            this.winner = "SEEKER";
+            this.seekerWins = this.add.sprite(375, 45, 'seekerWon').setOrigin(0, 0);
         } else {
-            this.winner = "HIDER";
+            this.hiderWins = this.add.sprite(375, 45, 'hiderWon').setOrigin(0, 0);
         }
         
         // styling for winner text
-        let winnerConfig = {
-            fontFamily: 'Verdana',
-            fontSize: '40px',
-            backgroundColor: '#a8a592',
-            color: '#262310',
-            align: 'right',
-            fixedWidth: 0,
-            fontStyle: 'bold'
-        }
+        // let winnerConfig = {
+        //     fontFamily: 'Verdana',
+        //     fontSize: '40px',
+        //     backgroundColor: '#a8a592',
+        //     color: '#262310',
+        //     align: 'right',
+        //     fixedWidth: 0,
+        //     fontStyle: 'bold'
+        // }
         // display winner
-        this.winnerText = this.add.text(500, 250, this.winner + " WON!", winnerConfig);
+        // this.winnerText = this.add.text(500, 250, this.winner + " WON!", winnerConfig);
     }
 
 
     update() {
         // play again animation
-        this.playAgain.anims.play('playAgainAnimation', true);
+        // this.playAgain.anims.play('playAgainAnimation', true);
     }
 }

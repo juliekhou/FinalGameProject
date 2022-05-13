@@ -3,13 +3,34 @@ class Play extends Phaser.Scene{
         super("Play");
     }
 
-    preload(){
-        // load spritesheets
-        this.load.spritesheet('angel', './assets/angel.png', {frameWidth: 64, frameHeight: 64, startFrame: 0, endFrame: 1});
+    preload(){      // load spritesheets
+        // load player
         this.load.atlas('npc_atlas', './assets/player.png', './assets/player.json');
+        // load monster
+        this.load.spritesheet('monsterNPC', './assets/monsterNPC.png', {frameWidth: 150, frameHeight: 190, startFrame: 0, endFrame: 8});
+        // load background image
+        this.load.image('playBackground', "./assets/playBackground.png");        
     }
 
     create(){
+        // load background
+        this.background = this.add.tileSprite(0, 0, 1280, 960, 'playBackground').setOrigin(0, 0);
+        this.background.setPipeline('Light2D');
+
+        // load bg audio
+        this.backgroundChatter = this.sound.add('backgroundChatter');
+        this.backgroundChatter.setLoop(true);
+        let chatterConfig = {
+            mute: false,
+            volume: 0.25,
+            rate: 1,
+            detune: 0,
+            seek: 0,
+            loop: true,
+            delay: 0
+        }
+        this.backgroundChatter.play(chatterConfig);
+
         // change cursor to flashlight
         this.input.setDefaultCursor('url(./assets/flashlight.png), pointer');
 
@@ -25,9 +46,6 @@ class Play extends Phaser.Scene{
         this.GROUND_HEIGHT = 35;
         this.AVATAR_SCALE = 0.75;
 
-        // set background color
-        this.cameras.main.setBackgroundColor('#666');
-
         // make player avatar 🧍
         this.player = this.physics.add.sprite(game.config.width/2, game.config.height/2, 'npc_atlas').setScale(this.AVATAR_SCALE).setOrigin(0, 0).setInteractive();
         this.player.on('pointerdown', () => {this.clickHider()});
@@ -41,6 +59,14 @@ class Play extends Phaser.Scene{
         for(let x = 0; x < 75; x++){
             this.addNPC();
         }
+        
+        // monster npc
+        // this.monsterNPC = this.physics.add.sprite(400, 300, 'monsterNPC');
+        // this.anims.create({
+        //     key: 'idle',
+        //     frames: this.anims.generateFrameNumbers('monsterNPC', { start: 0, end: 8, first: 0}),
+        //     frameRate: 10
+        // });
         
         // walk animation for human NPC
         this.anims.create({ 
@@ -123,6 +149,20 @@ class Play extends Phaser.Scene{
             this.clockRight.setText(this.timer/1000);
         } else {
             hiderWin = true;
+            // load hit sound1
+            this.missSound1 = this.sound.add('missSound1');
+            this.missSound1.setLoop(true);
+            let missSoundConfig = {
+                mute: false,
+                volume: 0.25,
+                rate: 1,
+                detune: 0,
+                seek: 0,
+                loop: false,
+                delay: 0
+            }
+            this.backgroundChatter.stop();
+            this.missSound1.play(missSoundConfig);
             this.scene.start('GameOver');
         }
 
@@ -130,16 +170,21 @@ class Play extends Phaser.Scene{
         if(cursors.left.isDown) {
             this.player.body.setVelocityX(-this.VELOCITY);
             this.player.flipX = true;
+            this.player.anims.play('walk', true);
         } else if(cursors.right.isDown) {
             this.player.body.setVelocityX(this.VELOCITY);
-            this.player.flipX = false;       
+            this.player.flipX = false;
+            this.player.anims.play('walk', true);
         } else if(cursors.up.isDown) {
-            this.player.body.setVelocityY(-this.VELOCITY);        
+            this.player.body.setVelocityY(-this.VELOCITY);
+            this.player.anims.play('walk', true);      
         } else if(cursors.down.isDown) {
             this.player.body.setVelocityY(this.VELOCITY);
+            this.player.anims.play('walk', true);
         } else if (!cursors.right.isDown && !cursors.left.isDown && !cursors.up.isDown && !cursors.down.isDown) {
             this.player.body.setVelocityX(0);
             this.player.body.setVelocityY(0);
+            this.player.anims.play('walk', false);
         }
 
         // iterate through NPCs and check their direction and play animation
@@ -158,6 +203,21 @@ class Play extends Phaser.Scene{
 
     // function for clicking the hider
     clickHider(){
+        // load hit sound1
+        this.hitSound1 = this.sound.add('hitSound1');
+        this.hitSound1.setLoop(true);
+        let hitSoundConfig = {
+            mute: false,
+            volume: 0.25,
+            rate: 1,
+            detune: 0,
+            seek: 0,
+            loop: false,
+            delay: 0
+        }
+        this.backgroundChatter.stop();
+        this.hitSound1.play(hitSoundConfig);
+        // this.backgroundChatter.stop();
         this.scene.start('GameOver');
         seekerWin = true;
     }
