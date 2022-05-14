@@ -51,6 +51,9 @@ class Play extends Phaser.Scene{
         this.player.on('pointerdown', () => {this.clickHider()});
         this.player.setPipeline('Light2D');
 
+        // miss sound for clicking not the player
+        this.input.on('pointerdown', (pointer) => {this.clickElse(pointer)});
+
         // Use Phaser-provided cursor key creation function
         cursors = this.input.keyboard.createCursorKeys();
 
@@ -149,9 +152,8 @@ class Play extends Phaser.Scene{
             this.clockRight.setText(this.timer/1000);
         } else {
             hiderWin = true;
-            // load hit sound1
+            // load miss sound1
             this.missSound1 = this.sound.add('missSound1');
-            this.missSound1.setLoop(true);
             let missSoundConfig = {
                 mute: false,
                 volume: 0.25,
@@ -205,7 +207,6 @@ class Play extends Phaser.Scene{
     clickHider(){
         // load hit sound1
         this.hitSound1 = this.sound.add('hitSound1');
-        this.hitSound1.setLoop(true);
         let hitSoundConfig = {
             mute: false,
             volume: 0.25,
@@ -217,9 +218,26 @@ class Play extends Phaser.Scene{
         }
         this.backgroundChatter.stop();
         this.hitSound1.play(hitSoundConfig);
-        // this.backgroundChatter.stop();
         this.scene.start('GameOver');
         seekerWin = true;
+    }
+
+    // function for clicking other than the hider
+    clickElse(pointer){
+        this.missSound1 = this.sound.add('missSound1');
+        let missSoundConfig = {
+                mute: false,
+                volume: 0.25,
+                rate: 1,
+                detune: 0,
+                seek: 0,
+                loop: false,
+                delay: 0
+        }
+        if(!(this.player.getBounds().contains(pointer.x, pointer.y))){
+            this.missSound1.play(missSoundConfig);
+        }
+        
     }
 };
 

@@ -43,12 +43,27 @@ class Menu extends Phaser.Scene {
         //     frames: this.anims.generateFrameNumbers('play', { start: 0, end: 4, first: 0}),
         //     frameRate: 6
         // });
+
+        // load bg audio 
+        this.backgroundChatter = this.sound.add('backgroundChatter');
+        this.backgroundChatter.setLoop(true);
+        let chatterConfig = {
+            mute: false,
+            volume: 0.25,
+            rate: 1,
+            detune: 0,
+            seek: 0,
+            loop: true,
+            delay: 0
+        }
+        this.backgroundChatter.play(chatterConfig);
         
         // interactibility for buttons
         // this.tutorial.on('pointerdown', ()=> {
         //     this.scene.start('Tutorial');
         // });
         this.play.on('pointerdown', ()=> {
+            this.backgroundChatter.stop();
             this.scene.start('Play');
         });
     }
