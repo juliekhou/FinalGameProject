@@ -13,7 +13,7 @@ class GameOver extends Phaser.Scene {
     create() {
         // play again button
         this.playAgain = this.add.sprite(295, 525, 'playAgain').setOrigin(0, 0).setInteractive();
-        // adding animations
+        // adding animations in Sprint 2
         // this.anims.create({
         //     key: 'playAgainAnimation',
         //     frames: this.anims.generateFrameNumbers('playAgain', { start: 0, end: 4, first: 0}),
@@ -30,24 +30,11 @@ class GameOver extends Phaser.Scene {
         } else {
             this.hiderWins = this.add.sprite(375, 45, 'hiderWon').setOrigin(0, 0);
         }
-        
-        // styling for winner text
-        // let winnerConfig = {
-        //     fontFamily: 'Verdana',
-        //     fontSize: '40px',
-        //     backgroundColor: '#a8a592',
-        //     color: '#262310',
-        //     align: 'right',
-        //     fixedWidth: 0,
-        //     fontStyle: 'bold'
-        // }
-        // display winner
-        // this.winnerText = this.add.text(500, 250, this.winner + " WON!", winnerConfig);
     }
 
 
     update() {
-        // play again animation
+        // play again animation for Sprint 2
         // this.playAgain.anims.play('playAgainAnimation', true);
     }
 }

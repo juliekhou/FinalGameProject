@@ -3,10 +3,10 @@ class Play extends Phaser.Scene{
         super("Play");
     }
 
-    preload(){      // load spritesheets
-        // load player
+    preload(){
+        // load player atlas 
         this.load.atlas('npc_atlas', './assets/player.png', './assets/player.json');
-        // load monster
+        // load monster spritesheet 
         this.load.spritesheet('monsterNPC', './assets/monsterNPC.png', {frameWidth: 150, frameHeight: 190, startFrame: 0, endFrame: 8});
         // load background image
         this.load.image('playBackground', "./assets/playBackground.png");        
@@ -15,9 +15,10 @@ class Play extends Phaser.Scene{
     create(){
         // load background
         this.background = this.add.tileSprite(0, 0, 1280, 960, 'playBackground').setOrigin(0, 0);
+        // set background lighting
         this.background.setPipeline('Light2D');
 
-        // load bg audio
+        // load background audio
         this.backgroundChatter = this.sound.add('backgroundChatter');
         this.backgroundChatter.setLoop(true);
         let chatterConfig = {
@@ -30,9 +31,6 @@ class Play extends Phaser.Scene{
             delay: 0
         }
         this.backgroundChatter.play(chatterConfig);
-
-        // change cursor to flashlight
-        this.input.setDefaultCursor('url(./assets/flashlight.png), pointer');
 
         // variable for hider winning state (time runs out)
         hiderWin = false;
@@ -48,7 +46,9 @@ class Play extends Phaser.Scene{
 
         // make player avatar 🧍
         this.player = this.physics.add.sprite(game.config.width/2, game.config.height/2, 'npc_atlas').setScale(this.AVATAR_SCALE).setOrigin(0, 0).setInteractive();
+        // add hider interactibility 
         this.player.on('pointerdown', () => {this.clickHider()});
+        // add lighting to player
         this.player.setPipeline('Light2D');
 
         // miss sound for clicking not the player
@@ -63,7 +63,7 @@ class Play extends Phaser.Scene{
             this.addNPC();
         }
         
-        // monster npc
+        // monster npc - Sprint 2
         // this.monsterNPC = this.physics.add.sprite(400, 300, 'monsterNPC');
         // this.anims.create({
         //     key: 'idle',
@@ -103,7 +103,7 @@ class Play extends Phaser.Scene{
         }
         // clock
         this.clockRight = this.add.text(0, 50, 0, clockConfig);
-        // 60-second play clock
+        // 30-second play clock
         this.timer = game.settings.gameTimer;
         this.clock = this.time.addEvent({delay: 1000, callback: () => {this.timer -= 1000;}, callbackScope: this, loop: true});
 
@@ -127,6 +127,7 @@ class Play extends Phaser.Scene{
 
         // initialize NPC with lighting
         let npc = new NPC(this, xPosition, yPosition, "npc_atlas", "player1").setScale(this.AVATAR_SCALE);
+        // add lighting to NPC
         npc.setPipeline('Light2D');
 
         // add NPC to group
@@ -151,6 +152,7 @@ class Play extends Phaser.Scene{
         if(!(this.timer < 0)){
             this.clockRight.setText(this.timer/1000);
         } else {
+            // set hider win to true
             hiderWin = true;
             // load miss sound1
             this.missSound1 = this.sound.add('missSound1');
@@ -199,6 +201,7 @@ class Play extends Phaser.Scene{
             npc.anims.play('walk', true);
         }, this);
 
+        // make all characters wrap when they hit the edge of the screen
         this.physics.world.wrap(this.player, 0);
         this.physics.world.wrap(this.npcGroup, 0);
     }
@@ -219,6 +222,7 @@ class Play extends Phaser.Scene{
         this.backgroundChatter.stop();
         this.hitSound1.play(hitSoundConfig);
         this.scene.start('GameOver');
+        // set seeker win to true
         seekerWin = true;
     }
 
@@ -234,10 +238,10 @@ class Play extends Phaser.Scene{
                 loop: false,
                 delay: 0
         }
+        // before playing sound, check if the pointer is on the hider
         if(!(this.player.getBounds().contains(pointer.x, pointer.y))){
             this.missSound1.play(missSoundConfig);
         }
-        
     }
 };
 

@@ -10,6 +10,7 @@ class Menu extends Phaser.Scene {
         this.load.audio('missSound1', './assets/missSound1.m4a');
 
         // load sprite sheet
+        // animations to come in Sprint 2
         // this.load.spritesheet('title', './assets/title.png', {frameWidth: 700, frameHeight: 700, startFrame: 0, endFrame: 5});
         // this.load.spritesheet('tutorial', './assets/tutorial.png', {frameWidth: 500, frameHeight: 110, startFrame: 0, endFrame: 5});
         this.load.image('play', './assets/play.png');
@@ -17,7 +18,7 @@ class Menu extends Phaser.Scene {
     }
 
     create() {
-        // title
+        // title - sprint 2
         // this.title = this.add.sprite(290, 20, 'title').setOrigin(0, 0);
 
         // background
@@ -27,6 +28,7 @@ class Menu extends Phaser.Scene {
         //this.tutorial = this.physics.add.sprite(390, 450, 'tutorial').setOrigin(0, 0).setInteractive();
         this.play = this.add.sprite(480, 480, 'play').setOrigin(0, 0).setInteractive();
 
+        // for Sprint 2
         // adding animations
         // this.anims.create({
         //     key: 'titleAnimation',
@@ -44,7 +46,7 @@ class Menu extends Phaser.Scene {
         //     frameRate: 6
         // });
 
-        // load bg audio 
+        // load background audio 
         this.backgroundChatter = this.sound.add('backgroundChatter');
         this.backgroundChatter.setLoop(true);
         let chatterConfig = {
@@ -58,7 +60,7 @@ class Menu extends Phaser.Scene {
         }
         this.backgroundChatter.play(chatterConfig);
         
-        // interactibility for buttons
+        // interactibility for buttons - Sprint 2
         // this.tutorial.on('pointerdown', ()=> {
         //     this.scene.start('Tutorial');
         // });
@@ -75,7 +77,10 @@ class Menu extends Phaser.Scene {
             gameTimer: 30000    
         }
 
-        // play animations
+        // change cursor to flashlight
+        this.input.setDefaultCursor('url(./assets/flashlight.png), pointer');
+
+        // play animations - Sprint 2
         // this.title.anims.play('titleAnimation', true);
         //this.tutorial.anims.play('tutorialAnimation', true);
         // this.play.anims.play('playAnimation', true);
