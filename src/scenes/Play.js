@@ -9,7 +9,7 @@ class Play extends Phaser.Scene{
         // load monster spritesheet 
         this.load.spritesheet('monsterNPC', './assets/monsterNPC.png', {frameWidth: 150, frameHeight: 190, startFrame: 0, endFrame: 7});
         // load background image
-        this.load.image('playBackground', "./assets/playBackground.png");        
+        this.load.image('playBackground', "./assets/playBackground.png"); 
     }
 
     create(){
