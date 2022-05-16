@@ -7,7 +7,7 @@ class Play extends Phaser.Scene{
         // load player atlas 
         this.load.atlas('npc_atlas', './assets/player.png', './assets/player.json');
         // load monster spritesheet 
-        this.load.spritesheet('monsterNPC', './assets/monsterNPC.png', {frameWidth: 150, frameHeight: 190, startFrame: 0, endFrame: 8});
+        this.load.spritesheet('monsterNPC', './assets/monsterNPC.png', {frameWidth: 150, frameHeight: 190, startFrame: 0, endFrame: 7});
         // load background image
         this.load.image('playBackground', "./assets/playBackground.png");        
     }
@@ -43,6 +43,7 @@ class Play extends Phaser.Scene{
         this.DRAG = 800;    // DRAG < ACCELERATION = icy slide
         this.GROUND_HEIGHT = 35;
         this.AVATAR_SCALE = 0.75;
+        this.MONSTER_SCALE = 0.35;
 
         // make player avatar 🧍
         this.player = this.physics.add.sprite(game.config.width/2, game.config.height/2, 'npc_atlas').setScale(this.AVATAR_SCALE).setOrigin(0, 0).setInteractive();
@@ -58,20 +59,24 @@ class Play extends Phaser.Scene{
         cursors = this.input.keyboard.createCursorKeys();
 
         // adding the NPCs
-        this.npcGroup = this.add.group({});
+        this.npcHumanGroup = this.add.group({});
+        this.npcMonsterGroup = this.add.group({});
 
-        // adding Human NPCs
+        // adding human NPCs
         for(let x = 0; x < 75; x++){
-            this.addNPC("npc_atlas", "player1");
+            this.addNPC("npc_atlas", "player1", true, this.AVATAR_SCALE);
         }
+
+        // for(let x = 0; x < 50; x++){
+        //     this.addNPC("npc_atlas", "player1", true, this.AVATAR_SCALE);
+        // }
         
-        // monster npc - Sprint 2
-        // this.monsterNPC = this.physics.add.sprite(400, 300, 'monsterNPC');
-        // this.anims.create({
-        //     key: 'idle',
-        //     frames: this.anims.generateFrameNumbers('monsterNPC', { start: 0, end: 7, first: 0}),
-        //     frameRate: 10
-        // });
+        // // adding monster NPCs
+        // for(let y = 0; y < 50; y++){
+        //     console.log("here");
+        //     this.addNPC('monsterNPC', 0, false, this.MONSTER_SCALE);
+        // }
+        
         
         // walk animation for human NPC
         this.anims.create({ 
@@ -86,9 +91,18 @@ class Play extends Phaser.Scene{
             repeat: -1 
         });
 
+        this.anims.create({
+            key: 'idle',
+            frames: this.anims.generateFrameNumbers('monsterNPC', { start: 0, end: 7, first: 0}),
+            frameRate: 10
+        });
+
         // adding collisions 
-        this.physics.add.collider(this.npcGroup, this.player, (npc)=> {this.collide(npc)});
-        this.physics.add.collider(this.npcGroup);
+        this.physics.add.collider(this.npcHumanGroup, this.player, (npc)=> {this.collide(npc)});
+        this.physics.add.collider(this.npcHumanGroup);
+        this.physics.add.collider(this.npcMonsterGroup, this.player, (npc)=> {this.collide(npc)});
+        this.physics.add.collider(this.npcMonsterGroup);
+        this.physics.add.collider(this.npcHumanGroup, this.npcMonsterGroup);
 
         // display clock
         let clockConfig = {
@@ -122,18 +136,23 @@ class Play extends Phaser.Scene{
     }
 
     // function for adding NPC with randomized velocity and start position
-    addNPC(texture, frame){
+    addNPC(texture, frame, isHuman, scale){
         // set random starting x and y positions for NPC
         let xPosition = Math.ceil(Math.random() * 1270);
         let yPosition = Math.ceil(Math.random() * 710);
 
         // initialize NPC with lighting
-        let npc = new NPC(this, xPosition, yPosition, texture, frame).setScale(this.AVATAR_SCALE);
+        console.log(texture);
+        let npc = new NPC(this, xPosition, yPosition, texture, frame, isHuman).setScale(scale);
         // add lighting to NPC
         npc.setPipeline('Light2D');
 
         // add NPC to group
-        this.npcGroup.add(npc);
+        if(isHuman) {
+            this.npcHumanGroup.add(npc);
+        } else {
+            this.npcMonsterGroup.add(npc);
+        }
 
         // randomly set velocity
         let xVelocity = (Math.ceil(Math.random() * 300) + 0) * (Math.round(Math.random()) ? 1 : -1);
@@ -194,7 +213,7 @@ class Play extends Phaser.Scene{
         }
 
         // iterate through NPCs and check their direction and play animation
-        this.npcGroup.getChildren().forEach(function(npc){
+        this.npcHumanGroup.getChildren().forEach(function(npc){
             if(npc.body.velocity.x < 0) {
                 npc.flipX = true;
             } else {
@@ -203,9 +222,19 @@ class Play extends Phaser.Scene{
             npc.anims.play('walk', true);
         }, this);
 
+        this.npcMonsterGroup.getChildren().forEach(function(npc){
+            if(npc.body.velocity.x < 0) {
+                npc.flipX = true;
+            } else {
+                npc.flipX = false;
+            }
+            npc.anims.play('idle', true);
+        }, this);
+
         // make all characters wrap when they hit the edge of the screen
         this.physics.world.wrap(this.player, 0);
-        this.physics.world.wrap(this.npcGroup, 0);
+        this.physics.world.wrap(this.npcHumanGroup, 0);
+        this.physics.world.wrap(this.npcMonsterGroup, 0);
     }
 
     // function for clicking the hider
