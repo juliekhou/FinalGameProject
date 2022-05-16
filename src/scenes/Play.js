@@ -59,15 +59,17 @@ class Play extends Phaser.Scene{
 
         // adding the NPCs
         this.npcGroup = this.add.group({});
+
+        // adding Human NPCs
         for(let x = 0; x < 75; x++){
-            this.addNPC();
+            this.addNPC("npc_atlas", "player1");
         }
         
         // monster npc - Sprint 2
         // this.monsterNPC = this.physics.add.sprite(400, 300, 'monsterNPC');
         // this.anims.create({
         //     key: 'idle',
-        //     frames: this.anims.generateFrameNumbers('monsterNPC', { start: 0, end: 8, first: 0}),
+        //     frames: this.anims.generateFrameNumbers('monsterNPC', { start: 0, end: 7, first: 0}),
         //     frameRate: 10
         // });
         
@@ -109,7 +111,7 @@ class Play extends Phaser.Scene{
 
         // lighting
         // ambient lighting
-        this.lights.enable().setAmbientColor(0x222222);
+        this.lights.enable().setAmbientColor(0x161616);
 
         // point light that follows cursor
         light = this.lights.addLight(0, 0, 200);
@@ -120,13 +122,13 @@ class Play extends Phaser.Scene{
     }
 
     // function for adding NPC with randomized velocity and start position
-    addNPC(){
+    addNPC(texture, frame){
         // set random starting x and y positions for NPC
         let xPosition = Math.ceil(Math.random() * 1270);
         let yPosition = Math.ceil(Math.random() * 710);
 
         // initialize NPC with lighting
-        let npc = new NPC(this, xPosition, yPosition, "npc_atlas", "player1").setScale(this.AVATAR_SCALE);
+        let npc = new NPC(this, xPosition, yPosition, texture, frame).setScale(this.AVATAR_SCALE);
         // add lighting to NPC
         npc.setPipeline('Light2D');
 
