@@ -9,7 +9,7 @@ class Play extends Phaser.Scene{
         // load monster spritesheet 
         this.load.spritesheet('monsterNPC', './assets/monsterNPC.png', {frameWidth: 150, frameHeight: 190, startFrame: 0, endFrame: 7});
         // load background image
-        this.load.image('playBackground', "./assets/playBackground.png"); 
+        this.load.image('playBackground', "./assets/playBackground.png");  
     }
 
     create(){
@@ -31,6 +31,9 @@ class Play extends Phaser.Scene{
             delay: 0
         }
         this.backgroundChatter.play(chatterConfig);
+
+        // from https://phaser.io/examples/v3/view/actions/place-on-triangle
+        this.triangle = new Phaser.Geom.Triangle.BuildRight(1300, -10, -490, -610);
 
         // variable for hider winning state (time runs out)
         hiderWin = false;
@@ -63,20 +66,14 @@ class Play extends Phaser.Scene{
         this.npcMonsterGroup = this.add.group({});
 
         // adding human NPCs
-        for(let x = 0; x < 75; x++){
+        for(let x = 0; x < 40; x++){
             this.addNPC("npc_atlas", "player1", true, this.AVATAR_SCALE);
         }
-
-        // for(let x = 0; x < 50; x++){
-        //     this.addNPC("npc_atlas", "player1", true, this.AVATAR_SCALE);
-        // }
         
-        // // adding monster NPCs
-        // for(let y = 0; y < 50; y++){
-        //     console.log("here");
-        //     this.addNPC('monsterNPC', 0, false, this.MONSTER_SCALE);
-        // }
-        
+        // adding monster NPCs
+        for(let y = 0; y < 40; y++){
+            this.addNPC('monsterNPC', 0, false, this.MONSTER_SCALE);
+        }
         
         // walk animation for human NPC
         this.anims.create({ 
@@ -141,9 +138,13 @@ class Play extends Phaser.Scene{
         let xPosition = Math.ceil(Math.random() * 1270);
         let yPosition = Math.ceil(Math.random() * 710);
 
+        while(Phaser.Geom.Triangle.Contains(this.triangle, xPosition, yPosition)){
+            xPosition = Math.ceil(Math.random() * 1270);
+            yPosition = Math.ceil(Math.random() * 710);
+        }
+
         // initialize NPC with lighting
-        console.log(texture);
-        let npc = new NPC(this, xPosition, yPosition, texture, frame, isHuman).setScale(scale);
+        let npc = new NPC(this, xPosition, yPosition, texture, frame, isHuman, scale).setScale(scale);
         // add lighting to NPC
         npc.setPipeline('Light2D');
 
@@ -158,6 +159,7 @@ class Play extends Phaser.Scene{
         let xVelocity = (Math.ceil(Math.random() * 300) + 0) * (Math.round(Math.random()) ? 1 : -1);
         let yVelocity = (Math.ceil(Math.random() * 225) + 75) * (Math.round(Math.random()) ? 1 : -1);
         npc.setVelocity(xVelocity, yVelocity).setBounce(1,1);
+        npc.setMaxVelocity(300, 300);
     }
 
     // function to handle collision between hider and NPCs
@@ -220,6 +222,15 @@ class Play extends Phaser.Scene{
                 npc.flipX = false;
             }
             npc.anims.play('walk', true);
+            npc.body.collideWorldBounds = true;
+            if(Phaser.Geom.Triangle.Contains(this.triangle, npc.x, npc.y)){
+                // npc.setVelocity(-1*npc.body.velocity.x, -1*npc.body.velocity.y).setBounce(1,1);
+                
+                //console.log(npc.getFrame());
+                npc.destroy();
+                //this.addNPC('npc_atlas', 'player1', true, this.AVATAR_SCALE);
+            }
+            
         }, this);
 
         this.npcMonsterGroup.getChildren().forEach(function(npc){
@@ -229,12 +240,25 @@ class Play extends Phaser.Scene{
                 npc.flipX = false;
             }
             npc.anims.play('idle', true);
+            npc.body.collideWorldBounds = true;
+            if(Phaser.Geom.Triangle.Contains(this.triangle, npc.x, npc.y)){
+                //console.log(npc.getFrame());
+                npc.destroy();
+                //this.addNPC('monsterNPC', 0, false, this.MONSTER_SCALE);
+            }
+            
         }, this);
 
+        // if(Phaser.Geom.Triangle.Contains(this.triangle, this.player.x, this.player.y)){
+        //     this.player.x = 10;
+        // }
+
         // make all characters wrap when they hit the edge of the screen
-        this.physics.world.wrap(this.player, 0);
-        this.physics.world.wrap(this.npcHumanGroup, 0);
-        this.physics.world.wrap(this.npcMonsterGroup, 0);
+        // this.physics.world.wrap(this.player, 0);
+        // this.physics.world.wrap(this.npcHumanGroup, 0);
+        // this.physics.world.wrap(this.npcMonsterGroup, 0);
+        this.player.body.collideWorldBounds = true;
+        
     }
 
     // function for clicking the hider
