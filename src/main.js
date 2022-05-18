@@ -7,7 +7,7 @@ let gameConfig = {
     type: Phaser.WEBGL,
     width: 1280,
     height: 720,
-    scene: [Menu, Tutorial, Play, GameOver],
+    scene: [Menu, Tutorial, SelectCharacter, Spawn, Play, GameOver],
     backgroundColor: 0x444444,
 
     // physics settings
@@ -33,3 +33,7 @@ let timeLeft;
 let hiderWin, seekerWin;
 // light variable declaration
 let light;
+// hider character variable declaration
+let hiderIsHuman;
+// hider spawn point variable declaration
+let hiderX, hiderY;

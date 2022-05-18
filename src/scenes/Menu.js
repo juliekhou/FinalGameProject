@@ -66,7 +66,7 @@ class Menu extends Phaser.Scene {
         // });
         this.play.on('pointerdown', ()=> {
             this.backgroundChatter.stop();
-            this.scene.start('Play');
+            this.scene.start('SelectCharacter');
         });
     }
 

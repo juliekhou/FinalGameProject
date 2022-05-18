@@ -4,12 +4,7 @@ class Play extends Phaser.Scene{
     }
 
     preload(){
-        // load player atlas 
-        this.load.atlas('npc_atlas', './assets/player.png', './assets/player.json');
-        // load monster spritesheet 
-        this.load.spritesheet('monsterNPC', './assets/monsterNPC.png', {frameWidth: 150, frameHeight: 190, startFrame: 0, endFrame: 7});
-        // load background image
-        this.load.image('playBackground', "./assets/playBackground.png");  
+         
     }
 
     create(){
@@ -49,7 +44,12 @@ class Play extends Phaser.Scene{
         this.MONSTER_SCALE = 0.35;
 
         // make player avatar 🧍
-        this.player = this.physics.add.sprite(game.config.width/2, game.config.height/2, 'npc_atlas').setScale(this.AVATAR_SCALE).setOrigin(0, 0).setInteractive();
+        if(hiderIsHuman){
+            this.player = this.physics.add.sprite(hiderX, hiderY, 'npc_atlas').setScale(this.AVATAR_SCALE).setOrigin(0, 0).setInteractive();
+        } else {
+            this.player = this.physics.add.sprite(hiderX, hiderY, 'monsterNPC').setScale(this.MONSTER_SCALE).setOrigin(0, 0).setInteractive();
+        }
+        
         // add hider interactibility 
         this.player.on('pointerdown', () => {this.clickHider()});
         // add lighting to player
@@ -197,21 +197,41 @@ class Play extends Phaser.Scene{
         if(cursors.left.isDown) {
             this.player.body.setVelocityX(-this.VELOCITY);
             this.player.flipX = true;
-            this.player.anims.play('walk', true);
+            if(hiderIsHuman){
+                this.player.anims.play('walk', true);
+            } else {
+                this.player.anims.play('idle', true);
+            }
         } else if(cursors.right.isDown) {
             this.player.body.setVelocityX(this.VELOCITY);
             this.player.flipX = false;
-            this.player.anims.play('walk', true);
+            if(hiderIsHuman){
+                this.player.anims.play('walk', true);
+            } else {
+                this.player.anims.play('idle', true);
+            }
         } else if(cursors.up.isDown) {
             this.player.body.setVelocityY(-this.VELOCITY);
-            this.player.anims.play('walk', true);      
+            if(hiderIsHuman){
+                this.player.anims.play('walk', true);
+            } else {
+                this.player.anims.play('idle', true);
+            }    
         } else if(cursors.down.isDown) {
             this.player.body.setVelocityY(this.VELOCITY);
-            this.player.anims.play('walk', true);
+            if(hiderIsHuman){
+                this.player.anims.play('walk', true);
+            } else {
+                this.player.anims.play('idle', true);
+            }
         } else if (!cursors.right.isDown && !cursors.left.isDown && !cursors.up.isDown && !cursors.down.isDown) {
             this.player.body.setVelocityX(0);
             this.player.body.setVelocityY(0);
-            this.player.anims.play('walk', false);
+            if(hiderIsHuman){
+                this.player.anims.play('walk', false);
+            } else {
+                this.player.anims.play('idle', false);
+            }
         }
 
         // iterate through NPCs and check their direction and play animation
