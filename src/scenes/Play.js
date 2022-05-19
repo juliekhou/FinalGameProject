@@ -3,17 +3,26 @@ class Play extends Phaser.Scene{
         super("Play");
     }
 
+<<<<<<< HEAD
     preload(){
          
+=======
+    preload(){      // load spritesheets
+        // load player
+        this.load.atlas('npc_atlas', './assets/player.png', './assets/player.json');
+        // load monster
+        this.load.spritesheet('monsterNPC', './assets/monsterNPC.png', {frameWidth: 150, frameHeight: 190, startFrame: 0, endFrame: 8});
+        // load background image
+        this.load.image('playBackground', "./assets/playBackground.png");        
+>>>>>>> parent of 61c38d7 (clean code)
     }
 
     create(){
         // load background
         this.background = this.add.tileSprite(0, 0, 1280, 960, 'playBackground').setOrigin(0, 0);
-        // set background lighting
         this.background.setPipeline('Light2D');
 
-        // load background audio
+        // load bg audio
         this.backgroundChatter = this.sound.add('backgroundChatter');
         this.backgroundChatter.setLoop(true);
         let chatterConfig = {
@@ -27,8 +36,13 @@ class Play extends Phaser.Scene{
         }
         this.backgroundChatter.play(chatterConfig);
 
+<<<<<<< HEAD
         // from https://phaser.io/examples/v3/view/actions/place-on-triangle
         this.triangle = new Phaser.Geom.Triangle.BuildRight(1300, -10, -490, -610);
+=======
+        // change cursor to flashlight
+        this.input.setDefaultCursor('url(./assets/flashlight.png), pointer');
+>>>>>>> parent of 61c38d7 (clean code)
 
         // variable for hider winning state (time runs out)
         hiderWin = false;
@@ -44,6 +58,7 @@ class Play extends Phaser.Scene{
         this.MONSTER_SCALE = 0.35;
 
         // make player avatar 🧍
+<<<<<<< HEAD
         if(hiderIsHuman){
             this.player = this.physics.add.sprite(hiderX, hiderY, 'npc_atlas').setScale(this.AVATAR_SCALE).setOrigin(0, 0).setInteractive();
         } else {
@@ -51,8 +66,10 @@ class Play extends Phaser.Scene{
         }
         
         // add hider interactibility 
+=======
+        this.player = this.physics.add.sprite(game.config.width/2, game.config.height/2, 'npc_atlas').setScale(this.AVATAR_SCALE).setOrigin(0, 0).setInteractive();
+>>>>>>> parent of 61c38d7 (clean code)
         this.player.on('pointerdown', () => {this.clickHider()});
-        // add lighting to player
         this.player.setPipeline('Light2D');
 
         // miss sound for clicking not the player
@@ -70,10 +87,20 @@ class Play extends Phaser.Scene{
             this.addNPC("npc_atlas", "player1", true, this.AVATAR_SCALE);
         }
         
+<<<<<<< HEAD
         // adding monster NPCs
         for(let y = 0; y < 40; y++){
             this.addNPC('monsterNPC', 0, false, this.MONSTER_SCALE);
         }
+=======
+        // monster npc
+        // this.monsterNPC = this.physics.add.sprite(400, 300, 'monsterNPC');
+        // this.anims.create({
+        //     key: 'idle',
+        //     frames: this.anims.generateFrameNumbers('monsterNPC', { start: 0, end: 8, first: 0}),
+        //     frameRate: 10
+        // });
+>>>>>>> parent of 61c38d7 (clean code)
         
         // walk animation for human NPC
         this.anims.create({ 
@@ -116,7 +143,7 @@ class Play extends Phaser.Scene{
         }
         // clock
         this.clockRight = this.add.text(0, 50, 0, clockConfig);
-        // 30-second play clock
+        // 60-second play clock
         this.timer = game.settings.gameTimer;
         this.clock = this.time.addEvent({delay: 1000, callback: () => {this.timer -= 1000;}, callbackScope: this, loop: true});
 
@@ -144,8 +171,12 @@ class Play extends Phaser.Scene{
         }
 
         // initialize NPC with lighting
+<<<<<<< HEAD
         let npc = new NPC(this, xPosition, yPosition, texture, frame, isHuman, scale).setScale(scale);
         // add lighting to NPC
+=======
+        let npc = new NPC(this, xPosition, yPosition, "npc_atlas", "player1").setScale(this.AVATAR_SCALE);
+>>>>>>> parent of 61c38d7 (clean code)
         npc.setPipeline('Light2D');
 
         // add NPC to group
@@ -175,7 +206,6 @@ class Play extends Phaser.Scene{
         if(!(this.timer < 0)){
             this.clockRight.setText(this.timer/1000);
         } else {
-            // set hider win to true
             hiderWin = true;
             // load miss sound1
             this.missSound1 = this.sound.add('missSound1');
@@ -253,6 +283,7 @@ class Play extends Phaser.Scene{
             
         }, this);
 
+<<<<<<< HEAD
         this.npcMonsterGroup.getChildren().forEach(function(npc){
             if(npc.body.velocity.x < 0) {
                 npc.flipX = true;
@@ -279,6 +310,10 @@ class Play extends Phaser.Scene{
         // this.physics.world.wrap(this.npcMonsterGroup, 0);
         this.player.body.collideWorldBounds = true;
         
+=======
+        this.physics.world.wrap(this.player, 0);
+        this.physics.world.wrap(this.npcGroup, 0);
+>>>>>>> parent of 61c38d7 (clean code)
     }
 
     // function for clicking the hider
@@ -297,7 +332,6 @@ class Play extends Phaser.Scene{
         this.backgroundChatter.stop();
         this.hitSound1.play(hitSoundConfig);
         this.scene.start('GameOver');
-        // set seeker win to true
         seekerWin = true;
     }
 
@@ -313,10 +347,10 @@ class Play extends Phaser.Scene{
                 loop: false,
                 delay: 0
         }
-        // before playing sound, check if the pointer is on the hider
         if(!(this.player.getBounds().contains(pointer.x, pointer.y))){
             this.missSound1.play(missSoundConfig);
         }
+        
     }
 };
 
